@@ -9,5 +9,15 @@ div.bar {
 .circlepumpkin {
   fill: yellow;
     stroke: orange;
-    stroke-width: 2; 
+    stroke-width: 2;
 }
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;

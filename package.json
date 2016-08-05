@@ -1,0 +1,29 @@
+{
+  "name": "d3",
+  "version": "1.0.0",
+  "description": "Sample code along my d3 learning experience",
+  "main": "router.js",
+  "scripts": {
+    "test": "node router.js",
+    "start": "node router.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/victordibia/d3.git"
+  },
+  "keywords": [
+    "d3",
+    "learning",
+    "d3"
+  ],
+  "author": "Victor Dibia",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/victordibia/d3/issues"
+  },
+  "homepage": "https://github.com/victordibia/d3#readme",
+  "dependencies": {
+    "connect": "^3.4.1",
+    "serve-static": "^1.11.1"
+  }
+}

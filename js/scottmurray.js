@@ -1,5 +1,6 @@
+h = 150 ;
+w = 600 ; var barPadding = 1;
 var dataset = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,	11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
-var datasetlinear = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,	11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
 
 // Chapter 5 Data binding
 databind = d3.select("body")
@@ -67,8 +68,7 @@ simplecircle.select(function() { return this.parentNode; })
 .text("Chapter 6 Making a Scatterplot")
 
 // Bar Chart with label
-h = 100 ;
-w = 500 ; var barPadding = 1;
+
 barsvg = d3.select("body")
 .append("div").attr("class","tutorialdiv")
 .append("svg");
@@ -144,7 +144,7 @@ var dataset = [
 	})
 	.attr("r", function(d) {
 		return rscale(d[1]);
-	})
+	}).attr("fill", "green");;
 
 
 	plotsvg.selectAll("text")
@@ -160,70 +160,140 @@ var dataset = [
 		return yscale(d[1]);
 	}).attr("font-family", "sans-serif")
 	.attr("font-size", "11px")
-	.attr("fill", "green")
+	.attr("fill", "blue")
 	.attr("text-anchor", "middle")
 	plotsvg.append("g")
-	.attr("class","axis")
-	.attr("transform", "translate(0," + (h - padding) + ")")
+	.attr("class","x axis")
+	.attr("transform", "translate(10," + (h - padding ) + ")")
 	.call(xaxis)
 	plotsvg.append("g")
-	.attr("class","axis")
-	.attr("transform", "translate(" + (padding) + ",0 )")
+	.attr("class","y axis")
+	.attr("transform", "translate(" + (padding + 10) + ",0 )")
 	.call(yaxis)
+	plotsvg.select(function() { return this.parentNode; })
+.append("div").attr("class","")
+.append("button", "padding: 10px") // Add a button for animation
+.attr("class","plotanimatebutton")
+.text(" Animate ")
 	plotsvg.select(function() { return this.parentNode; })
 	.append("div").attr("class","turorialtitle")
 	.attr("style", "padding: 10px")
 	.append("text")
 	.text("Chapter 8 : Axes")
 
+	d3.select("button.plotanimatebutton")
+	.on("click", function() {
 
-	// Chapter 8 Motions
+		var numValues = plotsvg.selectAll("circle").size();               //Count original length of dataset
+		dataset = [];                                       //Initialize empty array
+		for (var i = 0; i < numValues; i++) {               //Loop numValues times
+			var newNumber = Math.floor(Math.random() * 25); //New random integer (0-24)
+			dataset.push([ Math.floor(Math.random() * 100 + 10), Math.floor(Math.random() * 100 + 20)]);                        //Add new number to array
+		}
+		xscale = d3.scaleLinear().domain([0, d3.max(dataset, function(d) { return d[0]; })]).range([padding, w - padding*2]);
+		yscale = d3.scaleLinear().domain([0, d3.max(dataset, function(d) { return d[1]; })]).range([h-padding, padding]);
+		xaxis = d3.axisTop(xscale).ticks(5);
+		yaxis = d3.axisLeft(yscale).ticks(5);
+
+		//Update all rects
+		plotsvg.selectAll("circle")
+		.data(dataset)
+		.transition()
+		.ease(d3.easeLinear)
+		.style("fill", "red")
+		.attr("cx", function(d){
+			return xscale(d[0]) ;
+		})
+		.attr("cy", function(d){
+			return yscale(d[1]) ;
+		})
+		.attr("r", function(d) {
+			return rscale(d[1]);
+		}).transition() // Then red.
+		.duration(1000).style("fill", "green")
+
+		plotsvg.selectAll("text")
+		.data(dataset)
+		.transition()
+		.ease(d3.easeLinear)
+		.attr("x", function(d,i){
+			return xscale(d[0]);
+		}).attr("y", function(d){
+			return yscale(d[1]);
+		})
+
+		//Update x-axis
+		plotsvg.select(".x.axis")
+		    .transition()
+		    .duration(1000)
+		    .call(xaxis);
+
+		//Update y-axis
+		plotsvg.select(".y.axis")
+		    .transition()
+		    .duration(1000)
+		    .call(yaxis);
+
+	});
+
+
+	// Chapter 8 Motions and Transitions
+	//ordinal scale
+	var dataset  = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,	11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+	console.log(d3.range(dataset.length))
+	var xscale = d3.scaleBand().domain(d3.range(dataset.length)).rangeRound([0, w]).paddingInner(0.05);
+  var yscale = d3.scaleLinear().domain([0, d3.max(dataset)]).range([0, h]);
 	barsvg8 = d3.select("body")
 	.append("div").attr("class","tutorialdiv")
 	.append("svg");
 	barsvg8.attr("height", h)
 	.attr("width", w)
 	.selectAll("rect")
-	.data(datasetlinear)
+	.data(dataset)
 	.enter()
 	.append("rect")
 	.attr("x", function(d,i){
-		return i * (w / datasetlinear.length);
+		//console.log(xscale(i))
+		return xscale(i) ;
 	})
 	.attr("y", function(d) {
-		return h - (d * 4)  ; //Height minus data value
+		return h - yscale(d);  ; //Height minus data value
 	})
-	.attr("width",  w / datasetlinear.length - barPadding)
-	.attr("height", function(d,i){
-		return ( d*4);
+	.attr("width",  xscale.bandwidth())
+	.attr("height", function(d){
+		return yscale(d);
 	}).attr("fill", function(d) {
 		return "rgb(0, 0, " + (d * 10) + ")";
 	});
-	barsvg8.select(function() { return this.parentNode; })
+		barsvg8.select(function() { return this.parentNode; })
 	.append("div").attr("class","")
-	.append("button", "padding: 10px")
+	.append("button", "padding: 10px") // Add a button for animation
 	.attr("class","animatebutton")
 	.text(" Animate ")
+
 
 	d3.select("button.animatebutton")
 	.on("click", function() {
 
-		var numValues = datasetlinear.length;               //Count original length of dataset
+		var numValues = barsvg8.selectAll("rect").size();  ;               //Count original length of dataset
 		dataset = [];                                       //Initialize empty array
 		for (var i = 0; i < numValues; i++) {               //Loop numValues times
 			var newNumber = Math.floor(Math.random() * 25); //New random integer (0-24)
 			dataset.push(newNumber);                        //Add new number to array
 		}
+		var xscale = d3.scaleBand().domain(d3.range(dataset.length)).rangeRound([0, w]).paddingInner(0.05);
+	  var yscale = d3.scaleLinear().domain([0, d3.max(dataset)]).range([0, h]);
+
 		//Update all rects
 		barsvg8.selectAll("rect")
 		.data(dataset)
-		.transition() 
+		.transition()
 		.ease(d3.easeLinear)
 		.attr("y", function(d) {
-			return h - (d * 4);
-		})
+			return h - yscale(d);  ; //Height minus data value
+		}).attr("width",  xscale.bandwidth())
 		.attr("height", function(d) {
-			return ( d*4);
+			return yscale(d);
 		}).attr("fill", function(d) {   // <-- Down here!
 			return "rgb(0, 0, " + (d * 10) + ")";
 		});;
@@ -234,4 +304,4 @@ var dataset = [
 	.append("div").attr("class","turorialtitle")
 	.attr("style", "padding: 10px")
 	.append("text")
-	.text("Chapter 8 : Axes")
+	.text("Chapter 9 : Updats Transitions, Motion ")

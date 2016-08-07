@@ -171,10 +171,10 @@ var dataset = [
 	.attr("transform", "translate(" + (padding + 10) + ",0 )")
 	.call(yaxis)
 	plotsvg.select(function() { return this.parentNode; })
-.append("div").attr("class","")
-.append("button", "padding: 10px") // Add a button for animation
-.attr("class","plotanimatebutton")
-.text(" Animate ")
+	.append("div").attr("class","")
+	.append("button", "padding: 10px") // Add a button for animation
+	.attr("class","plotanimatebutton")
+	.text(" Animate ")
 	plotsvg.select(function() { return this.parentNode; })
 	.append("div").attr("class","turorialtitle")
 	.attr("style", "padding: 10px")
@@ -224,15 +224,15 @@ var dataset = [
 
 		//Update x-axis
 		plotsvg.select(".x.axis")
-		    .transition()
-		    .duration(1000)
-		    .call(xaxis);
+		.transition()
+		.duration(1000)
+		.call(xaxis);
 
 		//Update y-axis
 		plotsvg.select(".y.axis")
-		    .transition()
-		    .duration(1000)
-		    .call(yaxis);
+		.transition()
+		.duration(1000)
+		.call(yaxis);
 
 	});
 
@@ -240,9 +240,9 @@ var dataset = [
 	// Chapter 8 Motions and Transitions
 	//ordinal scale
 	var dataset  = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,	11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
-	console.log(d3.range(dataset.length))
+
 	var xscale = d3.scaleBand().domain(d3.range(dataset.length)).rangeRound([0, w]).paddingInner(0.05);
-  var yscale = d3.scaleLinear().domain([0, d3.max(dataset)]).range([0, h]);
+	var yscale = d3.scaleLinear().domain([0, d3.max(dataset)]).range([0, h]);
 	barsvg8 = d3.select("body")
 	.append("div").attr("class","tutorialdiv")
 	.append("svg");
@@ -265,7 +265,7 @@ var dataset = [
 	}).attr("fill", function(d) {
 		return "rgb(0, 0, " + (d * 10) + ")";
 	});
-		barsvg8.select(function() { return this.parentNode; })
+	barsvg8.select(function() { return this.parentNode; })
 	.append("div").attr("class","")
 	.append("button", "padding: 10px") // Add a button for animation
 	.attr("class","animatebutton")
@@ -282,7 +282,7 @@ var dataset = [
 			dataset.push(newNumber);                        //Add new number to array
 		}
 		var xscale = d3.scaleBand().domain(d3.range(dataset.length)).rangeRound([0, w]).paddingInner(0.05);
-	  var yscale = d3.scaleLinear().domain([0, d3.max(dataset)]).range([0, h]);
+		var yscale = d3.scaleLinear().domain([0, d3.max(dataset)]).range([0, h]);
 
 		//Update all rects
 		barsvg8.selectAll("rect")
@@ -305,3 +305,225 @@ var dataset = [
 	.attr("style", "padding: 10px")
 	.append("text")
 	.text("Chapter 9 : Updats Transitions, Motion ")
+
+
+	// Chapter 10 - Interactivity
+	var sortOrder = false;
+	barsvg10 = d3.select("body")
+	.append("div").attr("class","tutorialdiv")
+	.append("svg");
+	barsvg10.attr("height", h)
+	.attr("width", w)
+	.selectAll("rect")
+	.data(dataset)
+	.enter()
+	.append("rect")
+	.on("click", function(d) {
+		var dataset  = [ 5, 10, 13, 19, 21, 25, 22, 18, 15, 13,	11, 12, 15, 20, 18, 17, 16, 18, 23, 25 ];
+		sortOrder = !sortOrder;
+		var xscale = d3.scaleBand().domain(d3.range(dataset.length)).rangeRound([0, w]).paddingInner(0.05);
+		var yscale = d3.scaleLinear().domain([0, d3.max(dataset)]).range([0, h]);
+
+		barsvg10.selectAll("rect")
+		.sort(function(a, b) {
+			if (sortOrder) {
+				return d3.ascending(a, b);
+			} else {
+				return d3.descending(a, b);
+			}
+		})
+		.transition()
+		.duration(1000)
+		.attr("x", function(d, i) {
+			return xscale(i);
+		});
+
+	}).on("mouseover", function(d) {
+		var xscale = d3.scaleBand().domain(d3.range(dataset.length)).rangeRound([0, w]).paddingInner(0.05);
+
+		//Get this bar's x/y values, then augment for the tooltip
+		var xPosition = parseFloat(d3.select(this).attr("x")) + xscale.bandwidth() / 2 ;
+		var yPosition = parseFloat(d3.select(this).attr("y")) / 2 + h / 2 + window.pageYOffset + 150;
+
+
+
+
+		d3.select("#tooltip")
+		.style("left", xPosition + "px")
+		.style("top", yPosition + "px")
+		.select("#value")
+		.text(d);
+
+		//Show the tooltip
+		d3.select("#tooltip").classed("hidden", false);
+
+	})
+	.on("mouseout", function() {
+
+		//Hide the tooltip
+		d3.select("#tooltip").classed("hidden", true);
+
+	})
+	.attr("x", function(d,i){
+		//console.log(xscale(i))
+		return xscale(i) ;
+	})
+	.attr("y", function(d) {
+		return h - yscale(d);  ; //Height minus data value
+	})
+	.attr("width",  xscale.bandwidth())
+	.attr("height", function(d){
+		return yscale(d);
+	}).attr("fill", function(d) {
+		return "rgb(0, 0, " + (d * 10) + ")";
+	})
+	.append("title")
+	.text(function(d) {
+		return "This value is " + d;
+	});;
+	barsvg10.select(function() { return this.parentNode; })
+	.append("div").attr("class","turorialtitle")
+	.attr("style", "padding: 10px")
+	.append("text")
+	.text("Chapter 10 : Interactivity (hint .. click bars) ")
+
+
+	// chapter 11 - Layouts .. pie, stacks, force
+	dataset = [ 5, 10, 20, 45, 6, 25 ];
+	//h=500 ;
+	var pie = d3.pie();
+	var piesvg = d3.select("body")
+	.append("div").attr("class","tutorialdiv")
+	.append("svg").attr("height", h)
+	.attr("width", w);
+
+	var outerRadius = h / 2;
+	var innerRadius = h/4;
+	var arc = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius);
+	var color = d3.scaleOrdinal(d3.schemeCategory10);
+	var arcs = piesvg.selectAll("g.arc")
+	.data(pie(dataset))
+	.enter()
+	.append("g")
+	.attr("class", "arc")
+	.attr("transform", "translate(" + outerRadius + ", " + outerRadius + ")");
+	//Draw arc paths
+	arcs.append("path")
+	.attr("fill", function(d, i) {
+		return color(i);
+	})
+	.attr("d", arc);
+	arcs.append("text")
+	.attr("transform", function(d) {
+		return "translate(" + arc.centroid(d) + ")";
+	})
+	.attr("text-anchor", "middle").attr("class","pietext")
+	.text(function(d) {
+		return d.value;
+	});
+
+	// stack dataset
+	var stacksvg = d3.select("body")
+	.append("div").attr("class","tutorialdiv")
+	.append("svg").attr("height", h)
+	.attr("width", w);
+	var stackdata = [
+		[
+			{ x: 0, y: 5 },
+			{ x: 1, y: 4 },
+			{ x: 2, y: 2 },
+			{ x: 3, y: 7 },
+			{ x: 4, y: 23 }
+		],
+		[
+			{ x: 0, y: 10 },
+			{ x: 1, y: 12 },
+			{ x: 2, y: 19 },
+			{ x: 3, y: 23 },
+			{ x: 4, y: 17 }
+		],
+		[
+			{ x: 0, y: 22 },
+			{ x: 1, y: 28 },
+			{ x: 2, y: 32 },
+			{ x: 3, y: 35 },
+			{ x: 4, y: 43 }
+		]
+	];
+
+	var stack = d3.stack();
+	stack(stackdata);
+	var stackxscale = d3.scaleBand().domain(d3.range(stackdata[0].length)).range([0, w]).paddingInner(0.05);
+	var stackyscale = d3.scaleLinear().domain([0,83])
+	.range([0, h]);
+	// Add a group for each row of data
+	var groups = stacksvg.selectAll("g")
+	.data(stackdata)
+	.enter()
+	.append("g")
+	.style("fill", function(d, i) {
+		return color(i);
+	});
+	var rects = groups.selectAll("rect")
+	.data(function(d) { return d; })
+	.enter()
+	.append("rect")
+	.attr("x", function(d, i) {
+		return stackxscale(i);
+	})
+	.attr("y", function(d) {
+		return stackyscale(d.y);
+	})
+	.attr("height", function(d) {
+		return stackyscale(d.y);
+	})
+	.attr("width", stackxscale.bandwidth());
+	stacksvg.select(function() { return this.parentNode; })
+	.append("div").attr("class","turorialtitle")
+	.attr("style", "padding: 10px")
+	.append("text")
+	.text("Chapter 11 : Layouts .. not so well done stackedbars ")
+
+	// Force graph
+	var forcesvg = d3.select("body")
+	.append("div").attr("class","tutorialdiv")
+	.append("svg").attr("height", h)
+	.attr("width", w);
+
+	var dataset = {
+		nodes: [
+			{ name: "Adam" },
+			{ name: "Bob" },
+			{ name: "Carrie" },
+			{ name: "Donovan" },
+			{ name: "Edward" },
+			{ name: "Felicity" },
+			{ name: "George" },
+			{ name: "Hannah" },
+			{ name: "Iris" },
+			{ name: "Jerry" }
+		],
+		edges: [
+			{ source: 0, target: 1 },
+			{ source: 0, target: 2 },
+			{ source: 0, target: 3 },
+			{ source: 0, target: 4 },
+			{ source: 1, target: 5 },
+			{ source: 2, target: 5 },
+			{ source: 2, target: 5 },
+			{ source: 3, target: 4 },
+			{ source: 5, target: 8 },
+			{ source: 5, target: 9 },
+			{ source: 6, target: 7 },
+			{ source: 7, target: 8 },
+			{ source: 8, target: 9 }
+		]
+	};
+
+
+	 
+	forcesvg.select(function() { return this.parentNode; })
+	.append("div").attr("class","turorialtitle")
+	.attr("style", "padding: 10px")
+	.append("text")
+	.text("Chapter 11 : Layouts .. Force Graph")

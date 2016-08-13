@@ -11,21 +11,22 @@ Installation
 ================
 This is a nodejs application. To install,  
 
- - Clone this repository
+* Clone this repository
 
   ```$ git clone https://github.com/victordibia/d3.git
   ```
- - Navigate to your folder
+
+* Navigate to your folder
 
   ```cd d3
   ```
 
- - Install dependencies
+* Install dependencies
 
   ```npm install
   ```
 
- - Run the app
+* Run the app
   ```node router.js
   ```
 

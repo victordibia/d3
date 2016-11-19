@@ -29,6 +29,14 @@ This is a nodejs application. To install,
   npm install
   ```
 
+* Create `config.js`
+
+  ```
+  module.exports = {
+    portnumber: 8080
+  };
+  ```
+
 * Run the app
   ```
   node router.js
